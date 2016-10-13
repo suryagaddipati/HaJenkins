@@ -52,12 +52,4 @@
             <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
-    <dependencies>
-        <dependency>
-            <groupId>org.jvnet.hudson.plugins</groupId>
-            <artifactId>monitoring</artifactId>
-            <version>1.62.0</version>
-        </dependency>
-    </dependencies>
-
 </project>
