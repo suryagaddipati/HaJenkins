@@ -17,9 +17,9 @@
 
     <properties>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
-        <jenkins.version>1.625.3</jenkins.version>
+        <jenkins.version>2.26</jenkins.version>
         <!-- Java Level to use. Java 7 required when using core >= 1.612 -->
-        <java.level>7</java.level>
+        <java.level>8</java.level>
         <!-- Jenkins Test Harness version you use to test the plugin. -->
         <!-- For Jenkins version >= 1.580.1 use JTH 2.x or higher. -->
         <jenkins-test-harness.version>2.13</jenkins-test-harness.version>
@@ -52,4 +52,16 @@
             <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
+    <dependencies>
+        <dependency>
+            <groupId>com.groupon.jenkins-ci.plugins</groupId>
+            <artifactId>DotCi</artifactId>
+            <version>2.36.3-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>suryagaddipati</groupId>
+            <artifactId>jenkins-docker-slaves</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
