@@ -30,4 +30,8 @@ public class QueueRepository extends MongoRepository {
     protected DBCollection getCollection() {
         return getDatastore().getDB().getCollection("queue");
     }
+
+    public void save(final QueueEntry queueEntry) {
+        getDatastore().save(queueEntry);
+    }
 }
