@@ -2,7 +2,7 @@ package com.groupon.jenkins.DeadlockKiller;
 
 import com.google.inject.Injector;
 import com.groupon.jenkins.SetupConfig;
-import com.groupon.jenkins.dynamic.build.DbBackedProject;
+import com.groupon.jenkins.dynamic.build.DynamicProject;
 import hudson.model.Action;
 import hudson.model.LoadBalancer;
 import hudson.model.Queue;
@@ -26,11 +26,11 @@ public class LockFreeQueue extends Queue {
     }
 
     private ScheduleResult scheduleBuild(final Task p, final int quietPeriod, final Action[] actions) {
-        if (p instanceof DbBackedProject) {
+        if (p instanceof DynamicProject) {
             saveToDb(p, quietPeriod, actions);
             return ScheduleResult.refused();
         }
-        return super.schedule2(p, quietPeriod, actions);
+        return super.schedule2(p, quietPeriod, Arrays.asList(actions));
     }
 
     private void saveToDb(final Task p, final int quietPeriod, final Action[] actions) {

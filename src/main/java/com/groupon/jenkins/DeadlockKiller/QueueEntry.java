@@ -2,9 +2,10 @@ package com.groupon.jenkins.DeadlockKiller;
 
 import hudson.model.Action;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.CappedAt;
 import org.mongodb.morphia.annotations.Entity;
 
-@Entity("queue")
+@Entity(value = "queue", cap = @CappedAt(count = 20, value = 4096))
 public class QueueEntry {
     private final ObjectId projectId;
     private final int quitePeriod;
