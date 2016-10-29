@@ -7,13 +7,14 @@ import hudson.model.Queue;
 import hudson.model.queue.ScheduleResult;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class LockFreeQueue extends Queue {
+public class RedisQueue extends Queue {
 
 
-    public LockFreeQueue() {
+    public RedisQueue() {
         super(LoadBalancer.CONSISTENT_HASH);
     }
 
@@ -33,7 +34,9 @@ public class LockFreeQueue extends Queue {
 
     private void saveToDb(final Task p, final int quietPeriod, final Action[] actions) {
         final QueueRepository queueRepository = new QueueRepository();
-        queueRepository.save(p, quietPeriod, actions);
+        final List<Action> actionList = new ArrayList<>(Arrays.asList(actions));
+        actionList.add(new HaExecutionAction());
+        queueRepository.save(p, quietPeriod, actionList.toArray(new Action[]{}));
     }
 
     @Nonnull

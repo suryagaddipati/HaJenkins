@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 public class PluginImpl extends Plugin {
     public void start() throws Exception {
         final Jenkins jenkers = Jenkins.getInstance();
-        final LockFreeQueue queue = new LockFreeQueue();
+        final RedisQueue queue = new RedisQueue();
         final Field queueField = Jenkins.class.getDeclaredField("queue");
         queueField.setAccessible(true);
         ReflectionUtils.setField(queueField, jenkers, queue);

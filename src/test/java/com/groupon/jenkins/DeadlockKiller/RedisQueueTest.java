@@ -1,8 +1,10 @@
 package com.groupon.jenkins.DeadlockKiller;
 
+import hudson.model.Queue;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,5 +28,12 @@ public class RedisQueueTest {
 
         Thread.sleep(4000);
 
+    }
+
+    @Test
+    public void proxy_test() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        final RemoteQueueWaitingItem target = new RemoteQueueWaitingItem(null);
+        final Queue.Item item = RemoteQueueWaitingItem.getQueueItem(target);
+        System.out.println(item);
     }
 }
