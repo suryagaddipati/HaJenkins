@@ -1,7 +1,5 @@
 package com.groupon.jenkins.DeadlockKiller;
 
-import com.google.inject.Injector;
-import com.groupon.jenkins.SetupConfig;
 import com.groupon.jenkins.dynamic.build.DynamicProject;
 import hudson.model.Action;
 import hudson.model.LoadBalancer;
@@ -34,8 +32,7 @@ public class LockFreeQueue extends Queue {
     }
 
     private void saveToDb(final Task p, final int quietPeriod, final Action[] actions) {
-        final Injector injector = SetupConfig.get().getInjector();
-        final QueueRepository queueRepository = injector.getInstance(QueueRepository.class);
+        final QueueRepository queueRepository = new QueueRepository();
         queueRepository.save(p, quietPeriod, actions);
     }
 

@@ -5,6 +5,8 @@ import jenkins.model.Jenkins;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PluginImpl extends Plugin {
     public void start() throws Exception {
@@ -13,5 +15,15 @@ public class PluginImpl extends Plugin {
         final Field queueField = Jenkins.class.getDeclaredField("queue");
         queueField.setAccessible(true);
         ReflectionUtils.setField(queueField, jenkers, queue);
+    }
+
+    @Override
+    public void postInitialize() throws Exception {
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit((Runnable) () -> {
+            while (true) {
+                new DbQueueScheduler().doRun();
+            }
+        });
     }
 }

@@ -1,12 +1,8 @@
 package com.groupon.jenkins.DeadlockKiller;
 
-import com.google.inject.Injector;
-import com.groupon.jenkins.SetupConfig;
 import com.groupon.jenkins.dynamic.build.DbBackedProject;
-import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
-import hudson.model.PeriodicWork;
 import hudson.model.Queue;
 import hudson.model.TopLevelItem;
 import hudson.model.queue.ScheduleResult;
@@ -14,30 +10,23 @@ import jenkins.model.Jenkins;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 
-@Extension
-public class DbQueueScheduler extends PeriodicWork {
+public class DbQueueScheduler {
 
     public static final Logger LOGGER = Logger.getLogger(DbQueueScheduler.class.getName());
 
-    public long getRecurrencePeriod() {
-        return TimeUnit.SECONDS.toMillis(20);
-    }
 
-    @Override
-    protected void doRun() throws Exception {
+    protected void doRun() {
 
-        final Injector injector = SetupConfig.get().getInjector();
-        final QueueRepository queueRepository = injector.getInstance(QueueRepository.class);
+        final QueueRepository queueRepository = new QueueRepository();
         final QueueEntry queueEntry = queueRepository.getNext();
         if (queueEntry != null) {
             final Jenkins jenkins = Jenkins.getInstance();
             final ScheduleResult result = ((LockFreeQueue) jenkins.getQueue()).scheduleFromDb(getTask(jenkins, queueEntry), queueEntry.getQuitePeriod(), queueEntry.getActions());
             if (result.equals(ScheduleResult.refused())) {
-                queueRepository.save(queueEntry);
+//                queueRepository.save(queueEntry);
             }
         }
     }
