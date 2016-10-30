@@ -5,8 +5,12 @@ import hudson.model.Action;
 import hudson.model.LoadBalancer;
 import hudson.model.Queue;
 import hudson.model.queue.ScheduleResult;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,5 +58,11 @@ public class RedisQueue extends Queue {
         final ArrayList<Item> items = new ArrayList<>(Arrays.asList(super.getItems()));
         items.addAll(new QueueRepository().getRemoteWaitingItems());
         return items.toArray(new Item[]{});
+    }
+
+    @Override
+    public HttpResponse doCancelItem(@QueryParameter final long id) throws IOException, ServletException {
+//        queue = getItems();
+        return super.doCancelItem(id);
     }
 }

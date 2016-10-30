@@ -31,13 +31,13 @@ public class QueueRepository {
     public void saveWatingItem(final Queue.WaitingItem wi) {
         final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(wi);
         final String remoteWaitingItemXml = Jenkins.XSTREAM2.toXML(remoteWatingItem);
-        final String key = "remote_wating_item:" + remoteWatingItem.getRemoteId();
+        final String key = "remote_wating_item:" + remoteWatingItem.getQueueId();
         getJedis().set(key, remoteWaitingItemXml);
     }
 
     public void removeLeftItem(final Queue.LeftItem li) {
         final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(li);
-        final String key = "remote_wating_item:" + remoteWatingItem.getRemoteId();
+        final String key = "remote_wating_item:" + remoteWatingItem.getQueueId();
         getJedis().del(key);
     }
 
@@ -47,9 +47,9 @@ public class QueueRepository {
         final List<Queue.Item> remoteWatingItems = new ArrayList<>();
         for (final String remoteItemXmlKey : remoteItemXmlKeys) {
             final RemoteQueueWaitingItem remoteItem = (RemoteQueueWaitingItem) Jenkins.XSTREAM2.fromXML(jedis.get(remoteItemXmlKey));
-//            if (!remoteItem.getRemoteId().contains(PluginImpl.jenkinsInstanceId)) {
-            remoteWatingItems.add(RemoteQueueWaitingItem.getQueueItem(remoteItem));
-//            }
+            if (!remoteItem.getExecutingOnJenkinsUrl().contains(Jenkins.getInstance().getRootUrl())) { // there is already a queue item here
+                remoteWatingItems.add(RemoteQueueWaitingItem.getQueueItem(remoteItem));
+            }
 
         }
         return remoteWatingItems;

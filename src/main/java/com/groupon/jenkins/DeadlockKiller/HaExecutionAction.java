@@ -1,23 +1,47 @@
 package com.groupon.jenkins.DeadlockKiller;
 
-import hudson.model.InvisibleAction;
+import hudson.model.Action;
+import hudson.model.Queue;
 
-public class HaExecutionAction extends InvisibleAction {
+import java.util.List;
 
-    private final String jenkinsInstanceId;
-    private final String globalQueueId;
+public class HaExecutionAction implements Queue.QueueAction {
+    private final long queueId;
+    private String executingOnJenkinsUrl;
 
     public HaExecutionAction() {
-        this.jenkinsInstanceId = PluginImpl.jenkinsInstanceId;
-        this.globalQueueId = PluginImpl.jenkinsInstanceId + System.nanoTime();
+        this.queueId = System.nanoTime();
     }
 
-    public String getGlobalQueueId() {
-        return this.globalQueueId;
+    public String getExecutingOnJenkinsUrl() {
+        return this.executingOnJenkinsUrl;
     }
 
-    public String getJenkinsInstanceId() {
-        return this.jenkinsInstanceId;
+    public void setExecutingOnJenkinsUrl(final String executingOnJenkinsUrl) {
+        this.executingOnJenkinsUrl = executingOnJenkinsUrl;
     }
 
+    public long getQueueId() {
+        return this.queueId;
+    }
+
+    @Override
+    public boolean shouldSchedule(final List<Action> actions) {
+        return true;
+    }
+
+    @Override
+    public String getIconFileName() {
+        return null;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return null;
+    }
+
+    @Override
+    public String getUrlName() {
+        return null;
+    }
 }
