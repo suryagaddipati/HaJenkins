@@ -28,12 +28,9 @@ public class PluginImpl extends Plugin {
                     new DbQueueScheduler().doRun();
                 }
             });
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        new RemoteQueueCancellationListener().doRun();
-                    }
+            executor.submit((Runnable) () -> {
+                while (true) {
+                    new RemoteQueueCancellationListener().doRun();
                 }
             });
         }
