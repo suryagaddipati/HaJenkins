@@ -8,7 +8,7 @@ import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class QueueRepository {
 
@@ -32,7 +32,7 @@ public class QueueRepository {
         final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(wi);
         final String remoteWaitingItemXml = Jenkins.XSTREAM2.toXML(remoteWatingItem);
         final String key = "remote_wating_item:" + remoteWatingItem.getRemoteId();
-        getJedis().hmget(key, remoteWaitingItemXml);
+        getJedis().set(key, remoteWaitingItemXml);
     }
 
     public void removeLeftItem(final Queue.LeftItem li) {
@@ -42,11 +42,15 @@ public class QueueRepository {
     }
 
     public List<Queue.Item> getRemoteWaitingItems() {
-        final Map<String, String> remoteItemXmls = getJedis().hgetAll("remote_wating_item:*");
+        final Jedis jedis = getJedis();
+        final Set<String> remoteItemXmlKeys = jedis.keys("remote_wating_item:*");
         final List<Queue.Item> remoteWatingItems = new ArrayList<>();
-        for (final String remoteItemXml : remoteItemXmls.values()) {
-            final RemoteQueueWaitingItem remoteItem = (RemoteQueueWaitingItem) Jenkins.XSTREAM2.fromXML(remoteItemXml);
+        for (final String remoteItemXmlKey : remoteItemXmlKeys) {
+            final RemoteQueueWaitingItem remoteItem = (RemoteQueueWaitingItem) Jenkins.XSTREAM2.fromXML(jedis.get(remoteItemXmlKey));
+//            if (!remoteItem.getRemoteId().contains(PluginImpl.jenkinsInstanceId)) {
             remoteWatingItems.add(RemoteQueueWaitingItem.getQueueItem(remoteItem));
+//            }
+
         }
         return remoteWatingItems;
     }

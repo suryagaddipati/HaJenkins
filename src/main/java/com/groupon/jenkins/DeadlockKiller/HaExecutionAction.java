@@ -1,17 +1,23 @@
 package com.groupon.jenkins.DeadlockKiller;
 
 import hudson.model.InvisibleAction;
-import jenkins.model.Jenkins;
 
 public class HaExecutionAction extends InvisibleAction {
 
-    private final String serverName;
+    private final String jenkinsInstanceId;
+    private final String globalQueueId;
 
     public HaExecutionAction() {
-        this.serverName = Jenkins.getInstance().getDisplayName();
+        this.jenkinsInstanceId = PluginImpl.jenkinsInstanceId;
+        this.globalQueueId = PluginImpl.jenkinsInstanceId + System.nanoTime();
     }
 
-    public String getServerName() {
-        return this.serverName;
+    public String getGlobalQueueId() {
+        return this.globalQueueId;
     }
+
+    public String getJenkinsInstanceId() {
+        return this.jenkinsInstanceId;
+    }
+
 }

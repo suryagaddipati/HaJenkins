@@ -49,5 +49,10 @@ public class RedisQueue extends Queue {
         return super.schedule2(p, quietPeriod, Arrays.asList(actions));
     }
 
-
+    @Override
+    public Item[] getItems() {
+        final ArrayList<Item> items = new ArrayList<>(Arrays.asList(super.getItems()));
+        items.addAll(new QueueRepository().getRemoteWaitingItems());
+        return items.toArray(new Item[]{});
+    }
 }

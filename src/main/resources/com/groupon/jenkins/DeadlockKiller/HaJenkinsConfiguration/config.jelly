@@ -3,7 +3,7 @@
          xmlns:f="/lib/form">
     <f:section title="Mongo Queue Configuration">
         <f:entry title="Should serve builds?" field="serveBuilds">
-            <f:checkbox/>
+            <f:checkbox checked="${it.serveBuilds}"/>
         </f:entry>
     </f:section>
 </j:jelly>
