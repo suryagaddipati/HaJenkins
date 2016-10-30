@@ -34,5 +34,6 @@ public class RedisQueueTest {
 //        final RemoteQueueWaitingItem target = new RemoteQueueWaitingItem(null);
 //        final Queue.Item item = RemoteQueueWaitingItem.getQueueItem(target);
 //        System.out.println(item);
+
     }
 }

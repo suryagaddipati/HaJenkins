@@ -22,10 +22,18 @@ public class PluginImpl extends Plugin {
     public void postInitialize() throws Exception {
         final HaJenkinsConfiguration config = HaJenkinsConfiguration.get();
         if (config.getServeBuilds()) {
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final ExecutorService executor = Executors.newFixedThreadPool(2);
             executor.submit((Runnable) () -> {
                 while (true) {
                     new DbQueueScheduler().doRun();
+                }
+            });
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        new RemoteQueueCancellationListener().doRun();
+                    }
                 }
             });
         }

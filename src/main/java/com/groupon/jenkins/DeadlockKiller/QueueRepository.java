@@ -5,6 +5,7 @@ import hudson.model.Action;
 import hudson.model.Queue;
 import jenkins.model.Jenkins;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,5 +59,13 @@ public class QueueRepository {
 
     private Jedis getJedis() {
         return new Jedis("localhost");
+    }
+
+    public void notifyCancellation(final long id) {
+        getJedis().publish("queue_cancellation", id + "");
+    }
+
+    public void subscribeToChannel(final String channelName, final JedisPubSub pubSub) {
+        getJedis().subscribe(pubSub, channelName);
     }
 }

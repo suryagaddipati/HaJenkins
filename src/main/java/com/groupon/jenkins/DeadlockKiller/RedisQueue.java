@@ -62,7 +62,19 @@ public class RedisQueue extends Queue {
 
     @Override
     public HttpResponse doCancelItem(@QueryParameter final long id) throws IOException, ServletException {
-//        queue = getItems();
+        final Item item = getItem(id);
+        if (item == null) { // This might be in queue on other jenkins instances. notify them
+            new QueueRepository().notifyCancellation(id);
+        }
         return super.doCancelItem(id);
+    }
+
+    public void cancel(final long globalId) {
+        for (final Item item : super.getItems()) {
+            final HaExecutionAction haExecutionAction = item.getAction(HaExecutionAction.class);
+            if (haExecutionAction.getQueueId() == globalId) {
+                cancel(item);
+            }
+        }
     }
 }
