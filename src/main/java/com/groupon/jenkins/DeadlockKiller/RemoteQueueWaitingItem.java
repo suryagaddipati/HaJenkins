@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 
+//Represents queue Item running on some other Jenkins Instance
 public class RemoteQueueWaitingItem {
     private final ObjectId projectId;
     private final long queueId;

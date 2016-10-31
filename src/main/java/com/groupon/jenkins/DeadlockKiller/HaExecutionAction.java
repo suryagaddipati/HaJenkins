@@ -2,6 +2,7 @@ package com.groupon.jenkins.DeadlockKiller;
 
 import hudson.model.Action;
 import hudson.model.Queue;
+import jenkins.model.Jenkins;
 
 import java.util.List;
 
@@ -43,5 +44,9 @@ public class HaExecutionAction implements Queue.QueueAction {
     @Override
     public String getUrlName() {
         return null;
+    }
+
+    public boolean isExectionOnThisJenkinsInstance() {
+        return Jenkins.getInstance().getRootUrl().equals(this.executingOnJenkinsUrl);
     }
 }

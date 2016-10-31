@@ -1,6 +1,7 @@
 package com.groupon.jenkins.DeadlockKiller;
 
 import com.groupon.jenkins.dynamic.build.DbBackedProject;
+import com.groupon.jenkins.dynamic.build.DynamicBuild;
 import hudson.model.Action;
 import hudson.model.Queue;
 import jenkins.model.Jenkins;
@@ -67,5 +68,9 @@ public class QueueRepository {
 
     public void subscribeToChannel(final String channelName, final JedisPubSub pubSub) {
         getJedis().subscribe(pubSub, channelName);
+    }
+
+    public void notifyBuildAbort(final DynamicBuild dynamicBuild) {
+        getJedis().publish("build_cancellation", dynamicBuild.getProjectId().toString() + ":" + dynamicBuild.getNumber());
     }
 }

@@ -22,7 +22,7 @@ public class PluginImpl extends Plugin {
     public void postInitialize() throws Exception {
         final HaJenkinsConfiguration config = HaJenkinsConfiguration.get();
         if (config.getServeBuilds()) {
-            final ExecutorService executor = Executors.newFixedThreadPool(2);
+            final ExecutorService executor = Executors.newFixedThreadPool(3);
             executor.submit((Runnable) () -> {
                 while (true) {
                     new DbQueueScheduler().doRun();
@@ -31,6 +31,15 @@ public class PluginImpl extends Plugin {
             executor.submit((Runnable) () -> {
                 while (true) {
                     new RemoteQueueCancellationListener().doRun();
+                }
+            });
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        new QueueRepository().subscribeToChannel("build_cancellation", new RemoteBuildStopListener());
+                    }
+
                 }
             });
         }
