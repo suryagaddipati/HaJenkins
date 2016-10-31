@@ -1,4 +1,4 @@
-package com.groupon.jenkins.DeadlockKiller;
+package jenkins.ha;
 
 import jenkins.model.Jenkins;
 import redis.clients.jedis.JedisPubSub;

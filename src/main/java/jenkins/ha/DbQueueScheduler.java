@@ -1,4 +1,4 @@
-package com.groupon.jenkins.DeadlockKiller;
+package jenkins.ha;
 
 import hudson.model.queue.ScheduleResult;
 import jenkins.model.Jenkins;

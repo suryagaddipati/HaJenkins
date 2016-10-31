@@ -1,4 +1,4 @@
-package com.groupon.jenkins.DeadlockKiller;
+package jenkins.ha;
 
 import com.groupon.jenkins.dynamic.build.DbBackedProject;
 import hudson.model.Item;

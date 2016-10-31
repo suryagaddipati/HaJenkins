@@ -1,4 +1,4 @@
-package com.groupon.jenkins.DeadlockKiller;
+package jenkins.ha;
 
 import hudson.Plugin;
 import jenkins.model.Jenkins;
@@ -26,7 +26,9 @@ public class PluginImpl extends Plugin {
         final HaJenkinsConfiguration config = HaJenkinsConfiguration.get();
         final JedisPoolConfig poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(128);
-        PluginImpl.jedisPool = new JedisPool(poolConfig, config.getRedisHost());
+        if (config.getRedisHost() != null) {
+            PluginImpl.jedisPool = new JedisPool(poolConfig, config.getRedisHost());
+        }
 
         if (config.getServeBuilds()) {
             final ExecutorService executor = Executors.newFixedThreadPool(3);

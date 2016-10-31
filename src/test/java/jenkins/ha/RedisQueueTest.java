@@ -1,4 +1,4 @@
-package com.groupon.jenkins.DeadlockKiller;
+package jenkins.ha;
 
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
