@@ -18,14 +18,14 @@ public class QueueRepository {
         final QueueEntry entry = new QueueEntry(((DbBackedProject) p).getId(), quitePeriod, actions);
         final String entryXml = Jenkins.XSTREAM2.toXML(entry);
         final Jedis jedis = getJedis();
-        jedis.rpush("queue", entryXml);
+        jedis.rpush("jenkins:queue", entryXml);
 
     }
 
 
     public QueueEntry getNext() {
         final Jedis jedis = getJedis();
-        final String entryXml = jedis.blpop(0, "queue").get(1);
+        final String entryXml = jedis.blpop(0, "jenkins:queue").get(1);
         return (QueueEntry) Jenkins.XSTREAM2.fromXML(entryXml);
     }
 
@@ -33,19 +33,19 @@ public class QueueRepository {
     public void saveWatingItem(final Queue.WaitingItem wi) {
         final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(wi);
         final String remoteWaitingItemXml = Jenkins.XSTREAM2.toXML(remoteWatingItem);
-        final String key = "remote_wating_item:" + remoteWatingItem.getQueueId();
+        final String key = "jenkins:remote_wating_item:" + remoteWatingItem.getQueueId();
         getJedis().set(key, remoteWaitingItemXml);
     }
 
     public void removeLeftItem(final Queue.LeftItem li) {
         final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(li);
-        final String key = "remote_wating_item:" + remoteWatingItem.getQueueId();
+        final String key = "jenkins:remote_wating_item:" + remoteWatingItem.getQueueId();
         getJedis().del(key);
     }
 
     public List<Queue.Item> getRemoteWaitingItems() {
         final Jedis jedis = getJedis();
-        final Set<String> remoteItemXmlKeys = jedis.keys("remote_wating_item:*");
+        final Set<String> remoteItemXmlKeys = jedis.keys("jenkins:remote_wating_item:*");
         final List<Queue.Item> remoteWatingItems = new ArrayList<>();
         for (final String remoteItemXmlKey : remoteItemXmlKeys) {
             final RemoteQueueWaitingItem remoteItem = (RemoteQueueWaitingItem) Jenkins.XSTREAM2.fromXML(jedis.get(remoteItemXmlKey));
@@ -63,7 +63,7 @@ public class QueueRepository {
     }
 
     public void notifyCancellation(final long id) {
-        getJedis().publish("queue_cancellation", id + "");
+        getJedis().publish("jenkins:queue_cancellation", id + "");
     }
 
     public void subscribeToChannel(final String channelName, final JedisPubSub pubSub) {
@@ -71,6 +71,6 @@ public class QueueRepository {
     }
 
     public void notifyBuildAbort(final DynamicBuild dynamicBuild) {
-        getJedis().publish("build_cancellation", dynamicBuild.getProjectId().toString() + ":" + dynamicBuild.getNumber());
+        getJedis().publish("jenkins:build_cancellation", dynamicBuild.getProjectId().toString() + ":" + dynamicBuild.getNumber());
     }
 }
