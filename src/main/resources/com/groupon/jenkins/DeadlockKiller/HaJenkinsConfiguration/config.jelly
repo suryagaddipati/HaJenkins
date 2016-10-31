@@ -5,5 +5,8 @@
         <f:entry title="Should serve builds?" field="serveBuilds">
             <f:checkbox checked="${it.serveBuilds}"/>
         </f:entry>
+        <f:entry title="Redis host" field="redisHost">
+            <f:textbox/>
+        </f:entry>
     </f:section>
 </j:jelly>

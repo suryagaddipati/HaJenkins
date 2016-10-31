@@ -8,6 +8,7 @@ import org.kohsuke.stapler.StaplerRequest;
 @Extension
 public class HaJenkinsConfiguration extends GlobalConfiguration {
     private Boolean serveBuilds;
+    private String redisHost;
 
     public HaJenkinsConfiguration() {
         load();
@@ -15,6 +16,14 @@ public class HaJenkinsConfiguration extends GlobalConfiguration {
 
     public static HaJenkinsConfiguration get() {
         return GlobalConfiguration.all().get(HaJenkinsConfiguration.class);
+    }
+
+    public String getRedisHost() {
+        return this.redisHost;
+    }
+
+    public void setRedisHost(final String redisHost) {
+        this.redisHost = redisHost;
     }
 
     public Boolean getServeBuilds() {

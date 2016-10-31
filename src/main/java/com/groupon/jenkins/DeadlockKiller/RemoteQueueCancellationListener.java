@@ -5,7 +5,7 @@ import redis.clients.jedis.JedisPubSub;
 
 public class RemoteQueueCancellationListener extends JedisPubSub {
     public void doRun() {
-        new QueueRepository().subscribeToChannel("queue_cancellation", this);
+        new QueueRepository().subscribeToChannel("jenkins:queue_cancellation", this);
     }
 
     @Override
