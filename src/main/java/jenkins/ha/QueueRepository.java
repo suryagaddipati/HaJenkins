@@ -9,8 +9,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class QueueRepository {
 
@@ -35,30 +35,29 @@ public class QueueRepository {
         try (final Jedis jedis = getJedis()) {
             final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(wi);
             final String remoteWaitingItemXml = Jenkins.XSTREAM2.toXML(remoteWatingItem);
-            final String key = "jenkins:remote_wating_item:" + remoteWatingItem.getQueueId();
-            jedis.set(key, remoteWaitingItemXml);
+            final HashMap<String, String> map = new HashMap<>();
+            map.put(remoteWatingItem.getQueueId() + "", remoteWaitingItemXml);
+            jedis.hmset("jenkins:remote_wating_item", map);
         }
     }
 
     public void removeLeftItem(final Queue.LeftItem li) {
         try (final Jedis jedis = getJedis()) {
             final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(li);
-            final String key = "jenkins:remote_wating_item:" + remoteWatingItem.getQueueId();
-            jedis.del(key);
+            jedis.hdel("jenkins:remote_wating_item", remoteWatingItem.getQueueId() + "");
         }
     }
 
     public List<Queue.Item> getRemoteWaitingItems() {
         try (final Jedis jedis = getJedis()) {
             if (jedis == null) return new ArrayList<>();
-            final Set<String> remoteItemXmlKeys = jedis.keys("jenkins:remote_wating_item:*");
+            final List<String> remoteItemXmls = jedis.hvals("jenkins:remote_wating_item");
             final List<Queue.Item> remoteWatingItems = new ArrayList<>();
-            for (final String remoteItemXmlKey : remoteItemXmlKeys) {
-                final RemoteQueueWaitingItem remoteItem = (RemoteQueueWaitingItem) Jenkins.XSTREAM2.fromXML(jedis.get(remoteItemXmlKey));
+            for (final String remoteItemXml : remoteItemXmls) {
+                final RemoteQueueWaitingItem remoteItem = (RemoteQueueWaitingItem) Jenkins.XSTREAM2.fromXML(remoteItemXml);
                 if (!remoteItem.getExecutingOnJenkinsUrl().contains(Jenkins.getInstance().getRootUrl())) { // there is already a queue item here
                     remoteWatingItems.add(RemoteQueueWaitingItem.getQueueItem(remoteItem));
                 }
-
             }
             return remoteWatingItems;
 
