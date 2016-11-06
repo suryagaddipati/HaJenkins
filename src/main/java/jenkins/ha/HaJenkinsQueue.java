@@ -3,9 +3,9 @@ package jenkins.ha;
 import com.groupon.jenkins.dynamic.build.DynamicProject;
 import hudson.model.Action;
 import hudson.model.LoadBalancer;
-import hudson.model.Queue;
 import hudson.model.queue.ScheduleResult;
-import jenkins.ha.redis.QueueRepository;
+import jenkins.ha.redis.models.QueueEntry;
+import jenkins.ha.redis.pubsub.Queue;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RedisQueue extends Queue {
+public class HaJenkinsQueue extends hudson.model.Queue {
 
 
-    public RedisQueue() {
+    public HaJenkinsQueue() {
         super(LoadBalancer.CONSISTENT_HASH);
     }
 
@@ -38,10 +38,9 @@ public class RedisQueue extends Queue {
     }
 
     private void saveToDb(final Task p, final int quietPeriod, final Action[] actions) {
-        final QueueRepository queueRepository = new QueueRepository();
         final List<Action> actionList = new ArrayList<>(Arrays.asList(actions));
         actionList.add(new HaExecutionAction());
-        queueRepository.save(p, quietPeriod, actionList.toArray(new Action[]{}));
+        Queue.INSTANCE.save(p, quietPeriod, actionList.toArray(new Action[]{}));
     }
 
     @Nonnull
@@ -57,7 +56,7 @@ public class RedisQueue extends Queue {
     @Override
     public Item[] getItems() {
         final ArrayList<Item> items = new ArrayList<>(Arrays.asList(super.getItems()));
-        items.addAll(new QueueRepository().getRemoteWaitingItems());
+//        items.addAll(new Queue().getRemoteWaitingItems());
         return items.toArray(new Item[]{});
     }
 
@@ -65,7 +64,7 @@ public class RedisQueue extends Queue {
     public HttpResponse doCancelItem(@QueryParameter final long id) throws IOException, ServletException {
         final Item item = getItem(id);
         if (item == null) { // This might be in queue on other jenkins instances. notify them
-            new QueueRepository().notifyCancellation(id);
+//            new Queue().notifyCancellation(id);
         }
         return super.doCancelItem(id);
     }
@@ -77,5 +76,9 @@ public class RedisQueue extends Queue {
                 cancel(item);
             }
         }
+    }
+
+    public void schedule(final QueueEntry queueEntry) {
+        scheduleFromDb(JenkinsHelper.findTask(queueEntry.getProjectId()), queueEntry.getQuitePeriod(), queueEntry.getActions());
     }
 }

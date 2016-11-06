@@ -40,4 +40,5 @@ public class HaJenkinsConfiguration extends GlobalConfiguration {
         save();
         return true;
     }
+
 }

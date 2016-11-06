@@ -1,4 +1,4 @@
-package jenkins.ha;
+package jenkins.ha.redis.models;
 
 import hudson.model.Action;
 import org.bson.types.ObjectId;

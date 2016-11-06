@@ -1,4 +1,4 @@
-package jenkins.ha.redis.listeners;
+package jenkins.ha.redis.models;
 
 import com.groupon.jenkins.dynamic.build.DynamicProject;
 import hudson.model.Action;
