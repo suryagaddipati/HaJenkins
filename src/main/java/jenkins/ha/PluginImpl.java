@@ -1,6 +1,9 @@
 package jenkins.ha;
 
 import hudson.Plugin;
+import jenkins.ha.redis.QueueRepository;
+import jenkins.ha.redis.listeners.DbQueueScheduler;
+import jenkins.ha.redis.listeners.RemoteBuildStopListener;
 import jenkins.model.Jenkins;
 import org.springframework.util.ReflectionUtils;
 import redis.clients.jedis.JedisPool;
@@ -39,7 +42,8 @@ public class PluginImpl extends Plugin {
             });
             executor.submit((Runnable) () -> {
                 while (true) {
-                    new RemoteQueueCancellationListener().doRun();
+                    new RemoteBuildStopListener.RemoteQueueCancellationListener().doRun();
+                    System.out.print("processed item");
                 }
             });
             executor.submit((Runnable) () -> {

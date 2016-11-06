@@ -1,9 +1,12 @@
-package jenkins.ha;
+package jenkins.ha.redis;
 
 import com.groupon.jenkins.dynamic.build.DbBackedProject;
 import com.groupon.jenkins.dynamic.build.DynamicBuild;
 import hudson.model.Action;
 import hudson.model.Queue;
+import jenkins.ha.PluginImpl;
+import jenkins.ha.QueueEntry;
+import jenkins.ha.redis.listeners.RemoteQueueWaitingItem;
 import jenkins.model.Jenkins;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;

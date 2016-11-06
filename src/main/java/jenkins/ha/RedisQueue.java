@@ -5,6 +5,7 @@ import hudson.model.Action;
 import hudson.model.LoadBalancer;
 import hudson.model.Queue;
 import hudson.model.queue.ScheduleResult;
+import jenkins.ha.redis.QueueRepository;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
 

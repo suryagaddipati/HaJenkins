@@ -1,8 +1,10 @@
-package jenkins.ha;
+package jenkins.ha.redis.listeners;
 
 import com.groupon.jenkins.dynamic.build.DynamicProject;
 import hudson.model.Action;
 import hudson.model.Queue;
+import jenkins.ha.HaExecutionAction;
+import jenkins.ha.JenkinsHelper;
 import org.bson.types.ObjectId;
 import org.springframework.util.ReflectionUtils;
 

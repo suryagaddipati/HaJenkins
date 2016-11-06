@@ -1,6 +1,10 @@
-package jenkins.ha;
+package jenkins.ha.redis.listeners;
 
 import hudson.model.queue.ScheduleResult;
+import jenkins.ha.JenkinsHelper;
+import jenkins.ha.QueueEntry;
+import jenkins.ha.RedisQueue;
+import jenkins.ha.redis.QueueRepository;
 import jenkins.model.Jenkins;
 
 import java.util.logging.Logger;
@@ -11,7 +15,7 @@ public class DbQueueScheduler {
     public static final Logger LOGGER = Logger.getLogger(DbQueueScheduler.class.getName());
 
 
-    protected void doRun() {
+    public void doRun() {
 
         final QueueRepository queueRepository = new QueueRepository();
         final QueueEntry queueEntry = queueRepository.getNext();

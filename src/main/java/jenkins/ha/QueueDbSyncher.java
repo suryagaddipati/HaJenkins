@@ -3,6 +3,7 @@ package jenkins.ha;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.queue.QueueListener;
+import jenkins.ha.redis.QueueRepository;
 import jenkins.model.Jenkins;
 
 @Extension

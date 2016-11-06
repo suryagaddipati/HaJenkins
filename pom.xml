@@ -16,21 +16,13 @@
     <packaging>hpi</packaging>
 
     <properties>
-        <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
         <jenkins.version>2.26</jenkins.version>
-        <!-- Java Level to use. Java 7 required when using core >= 1.612 -->
         <java.level>8</java.level>
-        <!-- Jenkins Test Harness version you use to test the plugin. -->
-        <!-- For Jenkins version >= 1.580.1 use JTH 2.x or higher. -->
         <jenkins-test-harness.version>2.13</jenkins-test-harness.version>
-        <!-- Other properties you may want to use:
-             ~ hpi-plugin.version: The HPI Maven Plugin version used by the plugin..
-             ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
-        -->
     </properties>
 
-    <name>Monitors Jenkins for threadlocks and kills threads</name>
-    <description>Deadlock Killer</description>
+    <name>HA Jenkins</name>
+    <description>HA Jenkins</description>
 
 
     <licenses>
