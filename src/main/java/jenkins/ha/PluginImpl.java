@@ -54,4 +54,9 @@ public class PluginImpl extends Plugin {
             });
         }
     }
+
+    @Override
+    public void stop() throws Exception {
+        if (jedisPool != null) jedisPool.destroy();
+    }
 }
