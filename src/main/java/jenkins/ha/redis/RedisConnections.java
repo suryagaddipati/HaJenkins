@@ -11,12 +11,18 @@ public class RedisConnections {
     public static StatefulRedisConnection<String, String> redisConnection;
     public static RedisClient redisClient;
 
+    public static void startQueueListener() {
+        if (HaJenkinsConfiguration.get().getServeBuilds()) {
+            Queue.INSTANCE.startListener();
+        }
+    }
+
     public static void init() {
         final HaJenkinsConfiguration config = HaJenkinsConfiguration.get();
         final RedisURI redisUri = RedisURI.Builder.redis(config.getRedisHost()).build();
         RedisConnections.redisClient = RedisClient.create(redisUri);
         RedisConnections.redisConnection = redisClient.connect();
-        Queue.INSTANCE.startListener();
+        startQueueListener();
     }
 
     public static void shutDown() {

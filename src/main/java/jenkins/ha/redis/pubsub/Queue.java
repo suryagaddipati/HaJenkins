@@ -11,14 +11,15 @@ import jenkins.model.Jenkins;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 
 public enum Queue {
     INSTANCE;
-
+    private static final Logger LOGGER = Logger.getLogger(Queue.class.getName());
     private ExecutorService executorService;
     private StatefulRedisConnection<String, String> redisQueueConnection;
+    private boolean listenerStarted;
 
     public QueueEntry getNext(final StatefulRedisConnection<String, String> redisQueueConnection) {
         final KeyValue<String, String> queueEntry = redisQueueConnection.sync().brpop(0, "jenkins:queue");
@@ -32,23 +33,31 @@ public enum Queue {
     }
 
     public void startListener() {
-        this.redisQueueConnection = RedisConnections.redisClient.connect();
-        final HaJenkinsQueue jenkinsQueue = (HaJenkinsQueue) Jenkins.getInstance().getQueue();
-        this.executorService = Executors.newSingleThreadExecutor();
-        this.executorService.submit(() -> {
-            while (true) {
-                LOGGER.info("Wating for Next Queue item ..");
-                final QueueEntry queueEntry = Queue.INSTANCE.getNext(this.redisQueueConnection);
-                LOGGER.info("Processing item from queue: " + queueEntry.getProjectId());
-                jenkinsQueue.schedule(queueEntry);
-            }
-        });
+        if (!this.listenerStarted) {
+            LOGGER.info("Starting Redis Queue Listener");
+            this.redisQueueConnection = RedisConnections.redisClient.connect();
+            final HaJenkinsQueue jenkinsQueue = (HaJenkinsQueue) Jenkins.getInstance().getQueue();
+            this.executorService = Executors.newSingleThreadExecutor();
+            this.executorService.submit(() -> {
+                while (true) {
+                    LOGGER.info("Wating for Next Queue item ..");
+                    final QueueEntry queueEntry = Queue.INSTANCE.getNext(this.redisQueueConnection);
+                    LOGGER.info("Processing item from queue: " + queueEntry.getProjectId());
+                    jenkinsQueue.schedule(queueEntry);
+                }
+            });
+            this.listenerStarted = true;
+        }
     }
 
     public void stopListener() {
-        if (this.executorService != null) this.executorService.shutdownNow();
-        if (this.redisQueueConnection != null)
+        if (this.executorService != null) {
+            this.executorService.shutdownNow();
+        }
+        if (this.redisQueueConnection != null) {
             this.redisQueueConnection.close();
+        }
+        this.listenerStarted = false;
     }
 
 
