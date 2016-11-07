@@ -22,6 +22,7 @@ public enum RemoteLocalQueue {
 
     public static final String CHANNEL = "jenkins:queue_cancellation";
     private StatefulRedisPubSubConnection<String, String> connection;
+    private boolean listenerStarted;
 
     public void save(final Queue.WaitingItem wi) {
         if (RedisConnections.INSTANCE.hasRedis()) {
@@ -66,7 +67,7 @@ public enum RemoteLocalQueue {
     }
 
     public void startCancellationListener() {
-        if (RedisConnections.INSTANCE.hasRedis()) {
+        if (RedisConnections.INSTANCE.hasRedis() && !this.listenerStarted) {
             this.connection = RedisConnections.INSTANCE.getRedisClient().connectPubSub();
             final RedisPubSubAsyncCommands<String, String> async = this.connection.async();
             async.addListener(new RedisPubSubAdapter<String, String>() {
@@ -76,6 +77,7 @@ public enum RemoteLocalQueue {
                 }
             });
             async.subscribe(CHANNEL);
+            this.listenerStarted = true;
 
         }
 

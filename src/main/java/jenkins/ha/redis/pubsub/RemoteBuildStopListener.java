@@ -17,13 +17,14 @@ public enum RemoteBuildStopListener {
 
     public static final String CHANNEL = "jenkins:build_cancellation";
     private StatefulRedisPubSubConnection<String, String> connection;
+    private boolean listenerStarted;
 
     public void stop() {
         if (this.connection != null) this.connection.close();
     }
 
     public void start() {
-        if (RedisConnections.INSTANCE.hasRedis()) {
+        if (RedisConnections.INSTANCE.hasRedis() && !this.listenerStarted) {
             this.connection = RedisConnections.INSTANCE.getRedisClient().connectPubSub();
             final RedisPubSubAsyncCommands<String, String> async = this.connection.async();
             async.addListener(new RedisPubSubAdapter<String, String>() {
@@ -36,7 +37,7 @@ public enum RemoteBuildStopListener {
                 }
             });
             async.subscribe(CHANNEL);
-
+            this.listenerStarted = true;
         }
     }
 
