@@ -21,26 +21,6 @@ public class PluginImpl extends Plugin {
     @Override
     public void postInitialize() throws Exception {
         RedisConnections.INSTANCE.init();
-//        if (config.getServeBuilds()) {
-//            final ExecutorService executor = Executors.newFixedThreadPool(3);
-//            executor.submit((Runnable) () -> {
-//                while (true) {
-//                    new DbQueueScheduler().doRun();
-//                }
-//            });
-//            executor.submit((Runnable) () -> {
-//                while (true) {
-//                    new RemoteBuildStopListener.RemoteQueueCancellationListener().doRun();
-//                    System.out.print("processed item");
-//                }
-//            });
-//            executor.submit((Runnable) () -> {
-//                while (true) {
-//                    new Queue().subscribeToChannel(, new RemoteBuildStopListener());
-//                }
-//
-//            });
-//        }
     }
 
     @Override
