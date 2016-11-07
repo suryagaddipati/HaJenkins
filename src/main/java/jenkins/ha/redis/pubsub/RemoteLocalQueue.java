@@ -1,14 +1,18 @@
 package jenkins.ha.redis.pubsub;
 
+import com.groupon.jenkins.dynamic.build.DynamicBuild;
+import com.groupon.jenkins.dynamic.build.DynamicProject;
 import com.lambdaworks.redis.api.async.RedisAsyncCommands;
 import com.lambdaworks.redis.api.sync.RedisCommands;
 import com.lambdaworks.redis.pubsub.RedisPubSubAdapter;
 import com.lambdaworks.redis.pubsub.StatefulRedisPubSubConnection;
 import com.lambdaworks.redis.pubsub.api.async.RedisPubSubAsyncCommands;
 import hudson.model.Queue;
+import jenkins.ha.JenkinsHelper;
 import jenkins.ha.redis.RedisConnections;
 import jenkins.ha.redis.models.RemoteQueueWaitingItem;
 import jenkins.model.Jenkins;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +73,10 @@ public enum RemoteLocalQueue {
             async.addListener(new RedisPubSubAdapter<String, String>() {
                 @Override
                 public void message(final String channel, final String message) {
-                    System.out.print("meow");
+                    final String[] projectBuild = message.split(":");
+                    final DynamicProject project = (DynamicProject) JenkinsHelper.findTask(new ObjectId(projectBuild[0]));
+                    final DynamicBuild build = project.getBuildByNumber(Integer.parseInt(projectBuild[1]));
+                    build.abort();
                 }
             });
             async.subscribe(CHANNEL);

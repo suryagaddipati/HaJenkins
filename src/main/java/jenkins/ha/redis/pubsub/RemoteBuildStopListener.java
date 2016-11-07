@@ -10,9 +10,9 @@ public class RemoteBuildStopListener implements BuildStopListener {
     @Override
     public void onStop(final DynamicBuild dynamicBuild) {
         final HaExecutionAction haExecutionAction = dynamicBuild.getAction(HaExecutionAction.class);
-//        if (haExecutionAction != null && !haExecutionAction.isExectionOnThisJenkinsInstance()) {
-        RemoteLocalQueue.INSTANCE.notifyAbort(dynamicBuild.getProjectId().toString() + ":" + dynamicBuild.getNumber());
-//        }
+        if (haExecutionAction != null && !haExecutionAction.isExectionOnThisJenkinsInstance()) {
+            RemoteLocalQueue.INSTANCE.notifyAbort(dynamicBuild.getProjectId().toString() + ":" + dynamicBuild.getNumber());
+        }
     }
 
 
