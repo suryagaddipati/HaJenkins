@@ -20,7 +20,7 @@ public class PluginImpl extends Plugin {
 
     @Override
     public void postInitialize() throws Exception {
-        RedisConnections.init();
+        RedisConnections.INSTANCE.init();
 //        if (config.getServeBuilds()) {
 //            final ExecutorService executor = Executors.newFixedThreadPool(3);
 //            executor.submit((Runnable) () -> {
@@ -45,6 +45,6 @@ public class PluginImpl extends Plugin {
 
     @Override
     public void stop() throws Exception {
-        RedisConnections.shutDown();
+        RedisConnections.INSTANCE.shutDown();
     }
 }

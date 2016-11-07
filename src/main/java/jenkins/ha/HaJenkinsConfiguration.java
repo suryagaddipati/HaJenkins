@@ -1,7 +1,7 @@
 package jenkins.ha;
 
 import hudson.Extension;
-import jenkins.ha.redis.pubsub.Queue;
+import jenkins.ha.redis.RedisConnections;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
@@ -39,13 +39,8 @@ public class HaJenkinsConfiguration extends GlobalConfiguration {
     public boolean configure(final StaplerRequest req, final JSONObject json) throws FormException {
         req.bindJSON(this, json);
         save();
-        resetQueueListeners();
+        RedisConnections.INSTANCE.init();
         return true;
-    }
-
-    private void resetQueueListeners() {
-        if (this.serveBuilds) Queue.INSTANCE.startListener();
-        else Queue.INSTANCE.stopListener();
     }
 
 }

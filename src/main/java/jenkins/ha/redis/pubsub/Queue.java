@@ -29,13 +29,13 @@ public enum Queue {
     public void save(final hudson.model.Queue.Task p, final int quitePeriod, final Action[] actions) {
         final QueueEntry entry = new QueueEntry(((DbBackedProject) p).getId(), quitePeriod, actions);
         final String entryXml = Jenkins.XSTREAM2.toXML(entry);
-        RedisConnections.redisConnection.async().rpush("jenkins:queue", entryXml);
+        RedisConnections.INSTANCE.getRedisConnection().async().rpush("jenkins:queue", entryXml);
     }
 
     public void startListener() {
         if (!this.listenerStarted) {
             LOGGER.info("Starting Redis Queue Listener");
-            this.redisQueueConnection = RedisConnections.redisClient.connect();
+            this.redisQueueConnection = RedisConnections.INSTANCE.getRedisClient().connect();
             final HaJenkinsQueue jenkinsQueue = (HaJenkinsQueue) Jenkins.getInstance().getQueue();
             this.executorService = Executors.newSingleThreadExecutor();
             this.executorService.submit(() -> {
