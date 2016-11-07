@@ -36,7 +36,7 @@ public class PluginImpl extends Plugin {
 //            });
 //            executor.submit((Runnable) () -> {
 //                while (true) {
-//                    new Queue().subscribeToChannel("jenkins:build_cancellation", new RemoteBuildStopListener());
+//                    new Queue().subscribeToChannel(, new RemoteBuildStopListener());
 //                }
 //
 //            });

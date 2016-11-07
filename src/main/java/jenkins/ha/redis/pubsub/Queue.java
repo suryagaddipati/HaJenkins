@@ -11,6 +11,7 @@ import jenkins.model.Jenkins;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -29,7 +30,7 @@ public enum Queue {
     public void save(final hudson.model.Queue.Task p, final int quitePeriod, final Action[] actions) {
         final QueueEntry entry = new QueueEntry(((DbBackedProject) p).getId(), quitePeriod, actions);
         final String entryXml = Jenkins.XSTREAM2.toXML(entry);
-        RedisConnections.INSTANCE.getRedisConnection().async().rpush("jenkins:queue", entryXml);
+        RedisConnections.INSTANCE.getRedisConnection().sync().rpush("jenkins:queue", entryXml);
     }
 
     public void startListener() {
@@ -40,10 +41,15 @@ public enum Queue {
             this.executorService = Executors.newSingleThreadExecutor();
             this.executorService.submit(() -> {
                 while (true) {
-                    LOGGER.info("Wating for Next Queue item ..");
-                    final QueueEntry queueEntry = Queue.INSTANCE.getNext(this.redisQueueConnection);
-                    LOGGER.info("Processing item from queue: " + queueEntry.getProjectId());
-                    jenkinsQueue.schedule(queueEntry);
+                    try {
+                        LOGGER.info("Wating for Next Queue item ..");
+                        final QueueEntry queueEntry = Queue.INSTANCE.getNext(this.redisQueueConnection);
+                        LOGGER.info("Processing item from queue: " + queueEntry.getProjectId());
+                        jenkinsQueue.schedule(queueEntry);
+                    } catch (final Exception e) {
+                        //Don't kill the loop
+                        LOGGER.log(Level.SEVERE, "Failed to scheduled from queue", e);
+                    }
                 }
             });
             this.listenerStarted = true;

@@ -5,6 +5,7 @@ import com.lambdaworks.redis.RedisURI;
 import com.lambdaworks.redis.api.StatefulRedisConnection;
 import jenkins.ha.HaJenkinsConfiguration;
 import jenkins.ha.redis.pubsub.Queue;
+import jenkins.ha.redis.pubsub.RemoteLocalQueue;
 import org.apache.commons.lang.StringUtils;
 
 public enum RedisConnections {
@@ -26,6 +27,7 @@ public enum RedisConnections {
         if (this.redisConnection != null) this.redisConnection.close();
         if (this.redisClient != null) this.redisClient.shutdown();
         Queue.INSTANCE.stopListener();
+        RemoteLocalQueue.INSTANCE.stopCancellationListener();
     }
 
     private void startQueueListener(final HaJenkinsConfiguration config) {
@@ -42,6 +44,7 @@ public enum RedisConnections {
         if (StringUtils.isNotEmpty(config.getRedisHost())) {
             initRedisClient(redisUri);
             startQueueListener(config);
+            RemoteLocalQueue.INSTANCE.startCancellationListener();
         }
     }
 
@@ -53,6 +56,6 @@ public enum RedisConnections {
     }
 
     public boolean hasRedis() {
-        return this.redisClient != null;
+        return this.redisClient != null && this.redisConnection != null;
     }
 }
