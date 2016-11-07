@@ -43,6 +43,8 @@ public enum Queue {
                         final QueueEntry queueEntry = (QueueEntry) Jenkins.XSTREAM2.fromXML(queueEntryXml.getValue());
                         LOGGER.info("Processing item from queue: " + queueEntry.getProjectId());
                         jenkinsQueue.schedule(queueEntry);
+                    } catch (final InterruptedException ie) {
+                        return; //uncheck watch checkbox in configuration
                     } catch (final Exception e) {
                         //Don't kill the loop
                         LOGGER.log(Level.SEVERE, "Failed to scheduled from queue", e);
