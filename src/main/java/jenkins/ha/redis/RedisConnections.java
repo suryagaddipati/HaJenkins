@@ -46,9 +46,13 @@ public enum RedisConnections {
     }
 
     private void initRedisClient(final RedisURI redisUri) {
-        if (this.redisClient == null) {
+        if (!hasRedis()) {
             this.redisClient = RedisClient.create(redisUri);
             this.redisConnection = this.redisClient.connect();
         }
+    }
+
+    public boolean hasRedis() {
+        return this.redisClient != null;
     }
 }

@@ -61,20 +61,9 @@ public enum Queue {
     }
 
 
-//    public void saveWatingItem(final Queue.WaitingItem wi) {
-//        try (final Jedis jedis = getJedis()) {
-//            final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(wi);
-//            final String remoteWaitingItemXml = Jenkins.XSTREAM2.toXML(remoteWatingItem);
-//            final HashMap<String, String> map = new HashMap<>();
-//            map.put(remoteWatingItem.getQueueId() + "", remoteWaitingItemXml);
-//            jedis.hmset("jenkins:remote_wating_item", map);
-//        }
-//    }
 //
 //    public void removeLeftItem(final Queue.LeftItem li) {
 //        try (final Jedis jedis = getJedis()) {
-//            final RemoteQueueWaitingItem remoteWatingItem = new RemoteQueueWaitingItem(li);
-//            jedis.hdel("jenkins:remote_wating_item", remoteWatingItem.getQueueId() + "");
 //        }
 //    }
 //

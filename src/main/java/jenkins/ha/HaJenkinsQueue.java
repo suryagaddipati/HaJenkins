@@ -6,6 +6,7 @@ import hudson.model.LoadBalancer;
 import hudson.model.queue.ScheduleResult;
 import jenkins.ha.redis.models.QueueEntry;
 import jenkins.ha.redis.pubsub.Queue;
+import jenkins.ha.redis.pubsub.RemoteLocalQueue;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -56,7 +57,7 @@ public class HaJenkinsQueue extends hudson.model.Queue {
     @Override
     public Item[] getItems() {
         final ArrayList<Item> items = new ArrayList<>(Arrays.asList(super.getItems()));
-//        items.addAll(new Queue().getRemoteWaitingItems());
+        items.addAll(RemoteLocalQueue.INSTANCE.getAll());
         return items.toArray(new Item[]{});
     }
 
