@@ -22,11 +22,6 @@ public enum Queue {
     private StatefulRedisConnection<String, String> redisQueueConnection;
     private boolean listenerStarted;
 
-    public QueueEntry getNext(final StatefulRedisConnection<String, String> redisQueueConnection) {
-        final KeyValue<String, String> queueEntry = redisQueueConnection.sync().brpop(0, "jenkins:queue");
-        return (QueueEntry) Jenkins.XSTREAM2.fromXML(queueEntry.getValue());
-    }
-
     public void save(final hudson.model.Queue.Task p, final int quitePeriod, final Action[] actions) {
         final QueueEntry entry = new QueueEntry(((DbBackedProject) p).getId(), quitePeriod, actions);
         final String entryXml = Jenkins.XSTREAM2.toXML(entry);
@@ -43,7 +38,9 @@ public enum Queue {
                 while (true) {
                     try {
                         LOGGER.info("Wating for Next Queue item ..");
-                        final QueueEntry queueEntry = Queue.INSTANCE.getNext(this.redisQueueConnection);
+                        //A timeout of zero can be used to block indefinitely.
+                        final KeyValue<String, String> queueEntryXml = this.redisQueueConnection.async().brpop(0, "jenkins:queue").get();
+                        final QueueEntry queueEntry = (QueueEntry) Jenkins.XSTREAM2.fromXML(queueEntryXml.getValue());
                         LOGGER.info("Processing item from queue: " + queueEntry.getProjectId());
                         jenkinsQueue.schedule(queueEntry);
                     } catch (final Exception e) {
