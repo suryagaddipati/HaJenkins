@@ -48,7 +48,7 @@ public enum RemoteBuildStopListener {
     }
 
     @Extension
-    private static class LocalBuildStopListener implements BuildStopListener {
+    public static class LocalBuildStopListener implements BuildStopListener {
         @Override
         public void onStop(final DynamicBuild dynamicBuild) {
             final HaExecutionAction haExecutionAction = dynamicBuild.getAction(HaExecutionAction.class);

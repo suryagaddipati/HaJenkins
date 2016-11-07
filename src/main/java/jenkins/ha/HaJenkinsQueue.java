@@ -65,7 +65,7 @@ public class HaJenkinsQueue extends hudson.model.Queue {
     public HttpResponse doCancelItem(@QueryParameter final long id) throws IOException, ServletException {
         final Item item = getItem(id);
         if (item == null) { // This might be in queue on other jenkins instances. notify them
-//            new Queue().notifyCancellation(id);
+            RemoteLocalQueue.INSTANCE.notifyCancellation(id);
         }
         return super.doCancelItem(id);
     }

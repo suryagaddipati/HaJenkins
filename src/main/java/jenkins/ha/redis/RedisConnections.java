@@ -36,7 +36,7 @@ public enum RedisConnections {
         if (config.getServeBuilds()) {
             Queue.INSTANCE.startListener();
         } else {
-            Queue.INSTANCE.startListener();
+            Queue.INSTANCE.stopListener();
         }
     }
 
