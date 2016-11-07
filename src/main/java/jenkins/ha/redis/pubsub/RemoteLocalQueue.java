@@ -1,18 +1,11 @@
 package jenkins.ha.redis.pubsub;
 
-import com.groupon.jenkins.dynamic.build.DynamicBuild;
-import com.groupon.jenkins.dynamic.build.DynamicProject;
 import com.lambdaworks.redis.api.async.RedisAsyncCommands;
 import com.lambdaworks.redis.api.sync.RedisCommands;
-import com.lambdaworks.redis.pubsub.RedisPubSubAdapter;
-import com.lambdaworks.redis.pubsub.StatefulRedisPubSubConnection;
-import com.lambdaworks.redis.pubsub.api.async.RedisPubSubAsyncCommands;
 import hudson.model.Queue;
-import jenkins.ha.JenkinsHelper;
 import jenkins.ha.redis.RedisConnections;
 import jenkins.ha.redis.models.RemoteQueueWaitingItem;
 import jenkins.model.Jenkins;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +15,6 @@ import java.util.List;
 public enum RemoteLocalQueue {
     INSTANCE;
 
-    public static final String CHANNEL = "jenkins:build_cancellation";
-    private StatefulRedisPubSubConnection<String, String> connection;
 
     public void save(final Queue.WaitingItem wi) {
         if (RedisConnections.INSTANCE.hasRedis()) {
@@ -62,32 +53,12 @@ public enum RemoteLocalQueue {
         return new ArrayList<>();
     }
 
+
     public void stopCancellationListener() {
-        if (this.connection != null) this.connection.close();
+
     }
 
     public void startCancellationListener() {
-        if (RedisConnections.INSTANCE.hasRedis()) {
-            this.connection = RedisConnections.INSTANCE.getRedisClient().connectPubSub();
-            final RedisPubSubAsyncCommands<String, String> async = this.connection.async();
-            async.addListener(new RedisPubSubAdapter<String, String>() {
-                @Override
-                public void message(final String channel, final String message) {
-                    final String[] projectBuild = message.split(":");
-                    final DynamicProject project = (DynamicProject) JenkinsHelper.findTask(new ObjectId(projectBuild[0]));
-                    final DynamicBuild build = project.getBuildByNumber(Integer.parseInt(projectBuild[1]));
-                    build.abort();
-                }
-            });
-            async.subscribe(CHANNEL);
-
-        }
-    }
-
-    public void notifyAbort(final String buidId) {
-        if (this.connection != null) {
-            RedisConnections.INSTANCE.getRedisConnection().async().publish(CHANNEL, buidId);
-        }
 
     }
 }
