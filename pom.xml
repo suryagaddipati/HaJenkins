@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
     <groupId>com.groupon.jenkins</groupId>
-    <artifactId>DeadlockKiller</artifactId>
+    <artifactId>HA-Jenkins</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
