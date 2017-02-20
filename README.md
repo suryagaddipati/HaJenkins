@@ -20,10 +20,12 @@ Method:
  * Build Create: When a build comes into the queue, it gets saved into redis queue ( I had to hack override Queue Implementation to achieve this).  Build gets picked up any of the masters that are watching the queue. 
 
 * Build Abort:  Aborting a 'ha build' puts a message into redis queue , which gets processed by all masters and the master running the actual build aborts it. 
- * Queued item Abort: Same mechanism as above ^. 
- * Build Execution: Build execution happens in a dynamically created agent.  Build info is written to db via DotCi, and build logs are synced to all masters via NFS. 
+
+* Queued item Abort: Same mechanism as above ^. 
+
+* Build Execution: Build execution happens in a dynamically created agent.  Build info is written to db via DotCi, and build logs are synced to all masters via NFS. 
  
- * Build Delete: Build gets deleted in DotCi database. 
+* Build Delete: Build gets deleted in DotCi database. 
 
 
 
